@@ -1,0 +1,39 @@
+# Holds ~80MiB resident memory for ~55s (fits under 200Mi limit; no polinux/stress image).
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: memory-spike
+  namespace: loadtest
+  labels:
+    app: memory-spike
+    team: microkube
+    env: loadtest
+spec:
+  ttlSecondsAfterFinished: 300
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: memory-spike
+        team: microkube
+        env: loadtest
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: alloc
+          image: python:3.12-alpine
+          command:
+            - python
+            - -c
+            - |
+              import time
+              # ~80 MiB resident (byte object); keep below 200Mi limit with interpreter overhead
+              _ = bytearray(80 * 1024 * 1024)
+              time.sleep(55)
+          resources:
+            requests:
+              memory: 96Mi
+              cpu: 100m
+            limits:
+              memory: 200Mi
+              cpu: 200m

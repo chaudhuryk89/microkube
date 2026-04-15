@@ -1,0 +1,24 @@
+# Requires metrics-server. Scales demo-web when CPU rises under load.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: demo-web
+  namespace: demo
+  labels:
+    app: demo-web
+    team: microkube
+    env: demo
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: demo-web
+  minReplicas: 2
+  maxReplicas: 8
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 20

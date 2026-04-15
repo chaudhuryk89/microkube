@@ -1,0 +1,23 @@
+# No `host` rule: browsers send Host: demo.localtest.me:8080 on non-80 ports, which
+# would not match host: demo.localtest.me and would fall through to the default backend.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo-web
+  namespace: demo
+  labels:
+    app: demo-web
+    team: microkube
+    env: demo
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: demo-web
+                port:
+                  number: 80

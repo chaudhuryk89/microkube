@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: demo-web-index
+  labels:
+    app: demo-web
+    team: microkube
+    env: demo
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8" />
+      <title>microkube demo-web</title>
+      <style>
+        body { font-family: system-ui, sans-serif; max-width: 40rem; margin: 3rem auto; padding: 0 1rem; }
+        code { background: #f4f4f5; padding: 0.15rem 0.4rem; border-radius: 4px; }
+      </style>
+    </head>
+    <body>
+      <h1>microkube demo-web</h1>
+      <p>If you see this page, traffic reached the <strong>demo</strong> Deployment through ingress.</p>
+      <p>Namespace: <code>demo</code> · Service: <code>demo-web</code></p>
+    </body>
+    </html>

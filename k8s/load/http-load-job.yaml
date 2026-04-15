@@ -1,0 +1,44 @@
+# HTTP burst against demo-web (ClusterIP). Triggers HPA when combined with metrics-server.
+# Apply after demo is ready: kubectl apply -f k8s/load/http-load-job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: http-load
+  namespace: loadtest
+  labels:
+    app: http-load
+    team: microkube
+    env: loadtest
+spec:
+  ttlSecondsAfterFinished: 600
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: http-load
+        team: microkube
+        env: loadtest
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: curl-burst
+          image: curlimages/curl:8.5.0
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              end=$(( $(date +%s) + 180 ))
+              while [ "$(date +%s)" -lt "$end" ]; do
+                for i in $(seq 1 25); do
+                  curl -sS -o /dev/null "http://demo-web.demo.svc.cluster.local/" &
+                done
+                wait
+              done
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
